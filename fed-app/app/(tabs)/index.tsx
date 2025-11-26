@@ -51,6 +51,10 @@ export default function HomeScreen() {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: false,
+        exif: false,
+        // iPhone HEIC → JPEG 자동 변환
+        ...(Platform.OS === 'ios' && { imageFormat: 'jpeg' }),
       });
 
       if (!result.canceled) {
@@ -70,6 +74,10 @@ export default function HomeScreen() {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: false,
+        exif: false,
+        // iPhone HEIC → JPEG 자동 변환
+        ...(Platform.OS === 'ios' && { imageFormat: 'jpeg' }),
       });
 
       if (!result.canceled) {
@@ -97,41 +105,60 @@ export default function HomeScreen() {
       if (selectedImage) {
         // 이미지 파일 추가
         const imageUri = selectedImage.uri;
-        const filename = imageUri.split('/').pop() || 'image.jpg';
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : 'image/jpeg';
+        const filename = imageUri.split('/').pop() || 'photo.jpg';
 
-        formData.append('image', {
+        // iPhone HEIC 형식 처리: 항상 JPEG로 변환
+        const type = 'image/jpeg';
+
+        const imageData = {
           uri: Platform.OS === 'ios' ? imageUri.replace('file://', '') : imageUri,
-          name: filename,
+          name: filename.replace(/\.heic$/i, '.jpg'), // HEIC → JPG
           type: type,
-        } as any);
+        };
+
+        console.log('📸 Image Data:', imageData);
+        formData.append('image', imageData as any);
       }
 
-      // 설명 추가
-      formData.append('description', symptomText);
+      // 텍스트 추가 (백엔드 파라미터명: text)
+      formData.append('text', symptomText);
+      console.log('📝 Text:', symptomText);
+
+      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.MODELS}`;
+      console.log('🚀 Request URL:', url);
 
       // API 요청
-      const response = await axios.post(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.MODELS}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          timeout: 30000,
-        }
-      );
+      const response = await axios.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000,
+      });
+
+      console.log('✅ Response:', response.data);
 
       // 응답 처리
-      if (response.data && response.data.diagnosis) {
-        setResult(response.data.diagnosis);
+      const { disease_class, message, image_confidence, text_confidence } = response.data;
+
+      if (disease_class) {
+        // 질병 매칭 성공
+        setResult(`진단 결과: ${disease_class}\n\n이미지 신뢰도: ${(image_confidence * 100).toFixed(1)}%\n텍스트 신뢰도: ${(text_confidence * 100).toFixed(1)}%`);
+      } else if (message) {
+        // 매칭 실패 또는 경고 메시지
+        setResult(message);
       } else {
         setResult('진단 결과를 받지 못했습니다.');
       }
     } catch (error: any) {
-      console.error('API Error:', error);
-      Alert.alert('오류', 'API 요청 중 오류가 발생했습니다.\n' + (error.message || ''));
+      console.error('❌ API Error:', error);
+      console.error('❌ Error Response:', error.response?.data);
+      console.error('❌ Error Status:', error.response?.status);
+
+      const errorMsg = error.response?.data?.detail
+        || error.message
+        || '알 수 없는 오류';
+
+      Alert.alert('오류', `API 요청 실패\n${errorMsg}`);
     } finally {
       setLoading(false);
     }
