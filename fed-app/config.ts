@@ -1,8 +1,9 @@
 // API 설정
+const baseUrl = process.env.EXPO_PUBLIC_BASE_URL ?? '';
+
 export const API_CONFIG = {
-  BASE_URL: 'http://172.25.24.147:8000',  // 맥 로컬 IP
+  BASE_URL: baseUrl,  // 기본값은 로컬 IP
   ENDPOINTS: {
     MODELS: '/model'  // 백엔드와 일치
   }
 };
-

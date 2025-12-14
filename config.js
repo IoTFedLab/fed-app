@@ -1,8 +1,9 @@
 // API 설정
+const baseUrl = process.env.EXPO_PUBLIC_BASE_URL ?? '';
+
 export const API_CONFIG = {
-  BASE_URL: 'http://172.25.24.147:8000', 
+  BASE_URL: baseUrl,
   ENDPOINTS: {
     MODELS: '/model'
   }
 };
-
