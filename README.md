@@ -36,9 +36,9 @@
 
 ## 4.시스템 아키텍쳐
 ![시스템 아키텍쳐](./docs_asset/SA.jpg)
-![alt text](https://file%2B.vscode-resource.vscode-cdn.net/Users/minji/Desktop/WorkSpace/fed-app/docs_asset/SA.jpg)
+
 ## 5.애플리케이션 구동법
-> expo go를 모바일에 선행적으로 설치합니다. 배포된 서버가 아닌 **로컬 서버 구동**을 원칙으로 합니다.
+> Expo를 모바일에 선행적으로 설치합니다. 배포된 서버가 아닌 **로컬 서버 구동**을 원칙으로 합니다.
 ### a. 백엔드 구동
 #### 1) 환경변수 등록
 > 벡터 DB는 외부에 공개되지 않습니다.
@@ -91,6 +91,12 @@ npm web
 
 ## 7.별첨
 <!-- 원본 논문 링크 -->
+[송현진, 문현수, 이영석.
+「연합학습 기반 피부 질환 이미지 분류 모바일 어플리케이션」,
+한국소프트웨어종합학술대회 논문집, 2021, pp. 1220–1222.](https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11035999)
 <!-- 허깅페이스 링크 -->
+[사용한 pytorch로 포팅된 mobilenet_v3](https://huggingface.co/timm/mobilenetv3_small_100.lamb_in1k)
 <!-- 고려대 모델 링크 -->
+[한국어 특화 임베딩 모델(KURE)](https://huggingface.co/nlpai-lab/KURE-v1)
 <!-- 데이터셋 링크 -->
+[ai-hub 안면부 피부질환 데이터셋](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=71863)
