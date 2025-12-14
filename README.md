@@ -12,9 +12,10 @@
   - [b. Central Learning (중앙 모델 사전 학습) 데이터 구성](#b-central-learning-중앙-모델-사전-학습-데이터-구성)
   - [c. Federated Learning 데이터 구성](#c-federated-learning-데이터-구성)
   - [d. 클라이언트(사용자)별 데이터 분배](#d-클라이언트사용자별-데이터-분배)
-- [6. 애플리케이션 구동법](#5-애플리케이션-구동법)
+- [6. 애플리케이션 구동법](#6-애플리케이션-구동법)
   - [a. 백엔드 구동](#a-백엔드-구동)
   - [b. 프론트엔드 구동](#b-프론트엔드-구동)
+  - [c. 애플리케이션 화면 예시](#c-애플리케이션-화면-예시)
 - [7. 추가 자료](#6-추가-자료)
 - [8. 참고 자료](#7-참고-자료)
 
@@ -60,9 +61,66 @@
 </div>
 
 ## 3. 기술스택
-![My Skills](https://go-skill-icons.vercel.app/api/icons?i=pytorch,reactnative,fastapi,pinecone,python,javascript,typescript,expo)
-<!-- 플라워 로고 -->
-<!-- 역할별로 로고 분리하면 좋을 듯 -->
+### 기술 스택별 역할 구분
+
+본 프로젝트는 연합학습 기반 모바일 애플리케이션 구현을 목표로 하며,  
+시스템을 **모델 학습·연합학습 / 백엔드 서버 / 모바일 애플리케이션** 영역으로 구분하고  
+각 영역의 역할에 따라 기술 스택을 분리하여 설계하였다.
+
+---
+
+#### 1) 모델 학습 및 연합학습 영역  
+<p>
+  <img src="https://go-skill-icons.vercel.app/api/icons?i=pytorch" height="32"/>
+  <img src="https://github.com/user-attachments/assets/ebf8fcb3-c6be-4d9f-ba99-5c7b8d21c1cf" height="32"/>
+</p>
+
+- **PyTorch**
+  - 피부 질환 이미지 분류 모델 학습 및 fine-tuning 수행
+  - 중앙 모델(Central Learning) 사전 학습을 통한 도메인 특화 모델 구축
+  - 클라이언트 로컬 학습 과정에서 모델 가중치 업데이트 처리
+- **Flower**
+  - 연합학습 서버 구성 및 클라이언트 관리
+  - 클라이언트별 학습된 모델 가중치 수집
+  - FedAvg, FedProx 알고리즘 기반 글로벌 모델 집계 및 갱신
+
+---
+
+#### 2) 백엔드 API 및 서버 영역  
+<img src="https://go-skill-icons.vercel.app/api/icons?i=fastapi,pinecone,python" height="32"/>
+
+- **FastAPI**
+  - 학습 완료 모델 로드 및 추론 API 제공
+  - 모바일 애플리케이션 요청 처리
+  - 입력된 피부 이미지 기반 질환 분류 결과 반환
+- **Pinecone (Vector DB)**
+  - 증상 설명 텍스트 임베딩 벡터 저장
+  - 이미지 분류 결과와 텍스트 간 의미 유사도 기반 보조 판단 수행
+- **Python**
+  - 모델 추론, 서버 로직 및 데이터 처리 전반에 사용
+
+---
+
+#### 3) 모바일 애플리케이션 영역  
+<img src="https://go-skill-icons.vercel.app/api/icons?i=reactnative,expo,typescript,javascript" height="32"/>
+
+- **React Native / Expo**
+  - 크로스 플랫폼 기반 모바일 애플리케이션 UI 구현
+  - 피부 이미지 촬영·업로드 및 증상 입력 인터페이스 제공
+  - 질환 분류 결과 시각화 및 사용자 피드백 출력
+- **TypeScript / JavaScript**
+  - 애플리케이션 상태 관리 및 화면 전환 로직 구현
+  - 백엔드 API와의 통신 및 데이터 처리
+
+---
+
+#### 4) 공통 개발 및 협업 환경  
+<img src="https://go-skill-icons.vercel.app/api/icons?i=github" height="32"/>
+
+- **GitHub**
+  - 코드 버전 관리 및 팀원 간 협업
+  - 기능 단위 개발 및 변경 이력 관리
+
 
 ## 4. 시스템 아키텍쳐
 ![시스템 아키텍쳐](./docs_asset/SA.jpg)
@@ -207,11 +265,26 @@ npm android
 npm web
 ```
 
-## 7. 추가 자료(발표 자료)
-<!--발표 자료랑 실제 애플리케이션 캡쳐본 넣으면 좋을 것 같음-->
-> [발표자료 바로가기](./docs_asset/[사물인터넷-오후반]_팀8_프로젝트2_발표자료.pdf)
-![cover](./docs_asset/cover.png)</br>
+### c. 애플리케이션 화면 예시
 
+다음은 본 프로젝트에서 구현한 모바일 애플리케이션의 실제 실행 화면이다.  
+사용자는 피부 사진 촬영 또는 업로드를 통해 질환 분석을 요청할 수 있으며,  
+필요에 따라 증상 설명을 함께 입력할 수 있다.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/39ac420c-7a8d-4c86-8625-31550d20ae2b" width="280"/>
+  <img src="https://github.com/user-attachments/assets/c52c0ad2-0067-4244-8493-e2525c2dd7e9" width="280"/>
+</p>
+
+- **애플리케이션 시작 화면(좌)**  
+  애플리케이션 실행 시 표시되는 초기 화면으로,  
+  AI 기반 피부 질환 분석 서비스의 목적과 기능을 직관적으로 안내한다.
+
+- **피부 진단 요청 화면(우)**  
+  사용자는 카메라 촬영 또는 갤러리 선택을 통해 피부 이미지를 입력할 수 있으며,  
+  증상 설명을 선택적으로 입력하여 분석 정확도를 보완할 수 있다.  
+  입력된 데이터는 서버에 원본 이미지로 저장되지 않으며,  
+  모델 추론 결과만을 기반으로 진단 결과를 제공한다.
 
 
 ## 8. 참고 자료
